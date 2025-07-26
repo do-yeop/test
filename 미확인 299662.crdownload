@@ -1,0 +1,22 @@
+import * as THREE from 'three';
+
+export function createMountain(position, height = 5, radius = 2) {
+  // 원뿔 형태 산
+  const geometry = new THREE.ConeGeometry(radius, height, 32, 1, false);
+  // vertex마다 색상 지정 (아래는 초록, 위는 갈색)
+  const colors = [];
+  for (let i = 0; i < geometry.attributes.position.count; i++) {
+    const y = geometry.attributes.position.getY(i);
+    const t = (y + height / 2) / height; // 0~1로 정규화
+    // 초록(0, 0.5, 0) → 갈색(0.4, 0.26, 0.13)
+    const r = 0 + t * (0.4 - 0);
+    const g = 0.5 - t * (0.5 - 0.26);
+    const b = 0 - t * (0 - 0.13);
+    colors.push(r, g, b);
+  }
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  const material = new THREE.MeshPhongMaterial({ vertexColors: true });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.copy(position);
+  return mesh;
+}
